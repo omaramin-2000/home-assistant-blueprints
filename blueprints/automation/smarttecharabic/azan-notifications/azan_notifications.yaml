@@ -23,116 +23,59 @@ blueprint:
   source_url: https://github.com/shadynafie/home-assistant-blueprints/blob/main/blueprints/automation/smarttecharabic/azan-notifications/azan_notifications.yaml
 
   input:
-
-  # ————————————————————————————————————————
-  # Notification target (UPDATED)
-  # ————————————————————————————————————————
-  notify_target:
-    name:  Notification Target Devices
-    description: Choose one or more devices to receive notifications.
-    icon: mdi:devices
-    collapsed: false
-    input:
-      notify_devices:
-        name: 📲 Mobile Devices
-        selector:
-          device:
-            filter:
+    # ————————————————————————————————————————
+    # Notification target
+    # ————————————————————————————————————————
+    notify_devices:
+      name: 📲 Mobile Devices
+      selector:
+        device:
+          filter:
             - integration: mobile_app
-            multiple: true   # <--- allow multiple devices
+          multiple: true
 
     # ————————————————————————————————————————
     # Prayer‑time sensors
     # ————————————————————————————————————————
-    prayer_sensors_section:
-      name: Prayer Time Sensors
-      description: Select the sensors that provide prayer times.
-      icon: mdi:mosque-outline
-      collapsed: true
-      input:
-        fajr_sensor:
-          name: 🌅 Fajr Time Sensor
-          description: Select a sensor that provides the Fajr prayer time.
-          selector:
-            entity:
-              filter:
-              - domain: [sensor]
-                device_class: timestamp
-        dhuhr_sensor:
-          name: ☀️ Dhuhr Time Sensor
-          description: Select a sensor that provides the Dhuhr prayer time.
-          selector:
-            entity:
-              filter:
-              - domain: [sensor]
-                device_class: timestamp
-        asr_sensor:
-          name: 🌤️ Asr Time Sensor
-          description: Select a sensor that provides the Asr prayer time.
-          selector:
-            entity:
-              filter:
-              - domain: [sensor]
-                device_class: timestamp
-        maghrib_sensor:
-          name: 🌅 Maghrib Time Sensor
-          description: Select a sensor that provides the Maghrib prayer time.
-          selector:
-            entity:
-              filter:
-              - domain: [sensor]
-                device_class: timestamp
-        isha_sensor:
-          name: 🌙 Isha Time Sensor
-          description: Select a sensor that provides the Isha prayer time.
-          selector:
-            entity:
-              filter:
-              - domain: [sensor]
-                device_class: timestamp
+    fajr_sensor:
+      name: 🌅 Fajr Time Sensor
+    dhuhr_sensor:
+      name: ☀️ Dhuhr Time Sensor
+    asr_sensor:
+      name: 🌤️ Asr Time Sensor
+    maghrib_sensor:
+      name: 🌅 Maghrib Time Sensor
+    isha_sensor:
+      name: 🌙 Isha Time Sensor
 
     # ————————————————————————————————————————
     # Enable / disable individual prayer alerts
     # ————————————————————————————————————————
-    enabled_prayers_section:
-      name: Enable/Disable prayers notifications
-      icon: mdi:bell-outline
-      collapsed: true
-      input:
-        fajr_enabled:
-          name: 🌅 Fajr Prayer
-          description: Enable or disable Fajr notifications
-          default: true
-          selector:
-            boolean: {}
-
-        dhuhr_enabled:
-          name: ☀️ Dhuhr Prayer
-          description: Enable or disable Dhuhr notifications
-          default: true
-          selector:
-            boolean: {}
-
-        asr_enabled:
-          name: 🌤️ Asr Prayer
-          description: Enable or disable Asr notifications
-          default: true
-          selector:
-            boolean: {}
-
-        maghrib_enabled:
-          name: 🌅 Maghrib Prayer
-          description: Enable or disable Maghrib notifications
-          default: true
-          selector:
-            boolean: {}
-
-        isha_enabled:
-          name: 🌙 Isha Prayer
-          description: Enable or disable Isha notifications
-          default: true
-          selector:
-            boolean: {}
+    fajr_enabled:
+      name: 🌅 Fajr Prayer
+      default: true
+      selector:
+        boolean: {}
+    dhuhr_enabled:
+      name: ☀️ Dhuhr Prayer
+      default: true
+      selector:
+        boolean: {}
+    asr_enabled:
+      name: 🌤️ Asr Prayer
+      default: true
+      selector:
+        boolean: {}
+    maghrib_enabled:
+      name: 🌅 Maghrib Prayer
+      default: true
+      selector:
+        boolean: {}
+    isha_enabled:
+      name: 🌙 Isha Prayer
+      default: true
+      selector:
+        boolean: {}
 
     # ————————————————————————————————————————
     # Custom notification text
@@ -172,102 +115,69 @@ blueprint:
     # ————————————————————————————————————————
     # Adhan audio playback
     # ————————————————————————————————————————
-    azan_audio_section:
-      name: Azan Audio Playback
-      description: Configure optional Azan audio playback on a speaker.
-      icon: mdi:volume-high
-      collapsed: true
-      input:
-
-        media_player_target:
-          name: 🖥️ Target Media Player
-          description: Speaker or display that will play the Adhan.
-          selector:
-            entity:
-              domain: media_player
-        
-        volume_level:
-          name: 🔊 Volume Level (0.0 to 1.0)
-          description: Set the playback volume before Adhan (optional)
-          default: 0.5
-          selector:
-            number:
-              min: 0.0
-              max: 1.0
-              step: 0.05
-              mode: slider
-
-
-        media_player_type:
-          name: 🎛️ Media Player Type
-          description: Choose the type of media player that will play the Azan.
-          default: direct_playback
-          selector:
-            select:
-              options:
-                - label: 🔊 Direct Playback (Google Cast, HomePod, Sonos)
-                  value: direct_playback
-                - label: 🗣️ Alexa (via Plex Playlist)
-                  value: alexa_plex
-
-        mp3_file:
-          name: 🌍 MP3 File URL (for Direct Playback)
-          description: |
-            • Use a publically available mp3 file.. OR..
-            • Place your MP3 file in **/config/www** (e.g. **/config/www**/audio/athan.mp3)
-            • Access it via **http://<HA_IP>:8123/local**/audio/athan.mp3
-          default: https://www.islamcan.com/audio/adhan/azan1.mp3
-          selector:
-            text: {}
-            
-        playlist_name:
-          name: 🎵 Plex Playlist Name (for Alexa)
-          description: |
-            • Make sure you have the Plex skill set up and linked to Alexa  
-            • Use the **exact playlist name** as it appears in your Plex library  
-          default: ""
-          selector:
-            text: {}
+    media_player_target:
+      name: 🖥️ Target Media Player
+      selector:
+        entity:
+          domain: media_player
+          multiple: false
+          include_entities: []
+    volume_level:
+      name: 🔊 Volume Level (0.0 to 1.0)
+      default: 0.5
+      selector:
+        number:
+          min: 0
+          max: 1
+          step: 0.01
+          mode: slider
+    media_player_type:
+      name: 🎛️ Media Player Type
+      default: direct_playback
+      selector:
+        select:
+          options:
+            - direct_playback
+            - alexa_plex
+    mp3_file:
+      name: 🌍 MP3 File URL (for Direct Playback)
+      default: ""
+      selector:
+        text: {}
+    playlist_name:
+      name: 🎵 Plex Playlist Name (for Alexa)
+      default: ""
+      selector:
+        text: {}
 
     # ————————————————————————————————————————
-    # Remind before prayer (NEW SECTION)
+    # Remind before prayer
     # ————————————————————————————————————————
-    remind_before_section:
-      name: Remind Before Prayer
-      description: Enter a list of minutes before each prayer for reminders (comma separated, e.g. 10,5,2).
-      icon: mdi:alarm
-      collapsed: true
-      input:
-        fajr_remind_before:
-          name: Minutes before Fajr
-          description: Enter minutes before Fajr (comma separated).
-          default: "0"
-          selector:
-            text: {}
-        dhuhr_remind_before:
-          name: Minutes before Dhuhr
-          description: Enter minutes before Dhuhr (comma separated).
-          default: "0"
-          selector:
-            text: {}
-        asr_remind_before:
-          name: Minutes before Asr
-          description: Enter minutes before Asr (comma separated).
-          default: "0"
-          selector:
-            text: {}
-        maghrib_remind_before:
-          name: Minutes before Maghrib
-          description: Enter minutes before Maghrib (comma separated).
-          default: "0"
-          selector:
-            text: {}
-        isha_remind_before:
-          name: Minutes before Isha
-          description: Enter minutes before Isha (comma separated).
-          default: "0"
-          selector:
-            text: {}
+    fajr_remind_before:
+      name: Minutes before Fajr
+      default: ""
+      selector:
+        text: {}
+    dhuhr_remind_before:
+      name: Minutes before Dhuhr
+      default: ""
+      selector:
+        text: {}
+    asr_remind_before:
+      name: Minutes before Asr
+      default: ""
+      selector:
+        text: {}
+    maghrib_remind_before:
+      name: Minutes before Maghrib
+      default: ""
+      selector:
+        text: {}
+    isha_remind_before:
+      name: Minutes before Isha
+      default: ""
+      selector:
+        text: {}
 
 variables:
   volume: !input volume_level
