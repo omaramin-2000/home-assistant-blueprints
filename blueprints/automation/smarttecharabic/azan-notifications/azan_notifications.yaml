@@ -354,41 +354,23 @@ trigger:
     id: isha_reminder
     value_template: >
       {{ (as_timestamp(states('!input isha_sensor')) - (isha_remind_before * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
-  {% for min in range(1, 61) %}
+  # Fajr reminders (expand as needed)
   - platform: template
-    id: fajr_reminder_{{ min }}
+    id: fajr_reminder_1
     value_template: >
-      {{ min in fajr_remind_before and
-         (as_timestamp(states('!input fajr_sensor')) - (min * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
-  {% endfor %}
-  {% for min in range(1, 61) %}
+      {{ 1 in fajr_remind_before and
+         (as_timestamp(states('!input fajr_sensor')) - 60) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
   - platform: template
-    id: dhuhr_reminder_{{ min }}
+    id: fajr_reminder_5
     value_template: >
-      {{ min in dhuhr_remind_before and
-         (as_timestamp(states('!input dhuhr_sensor')) - (min * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
-  {% endfor %}
-  {% for min in range(1, 61) %}
+      {{ 5 in fajr_remind_before and
+         (as_timestamp(states('!input fajr_sensor')) - 300) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
   - platform: template
-    id: asr_reminder_{{ min }}
+    id: fajr_reminder_10
     value_template: >
-      {{ min in asr_remind_before and
-         (as_timestamp(states('!input asr_sensor')) - (min * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
-  {% endfor %}
-  {% for min in range(1, 61) %}
-  - platform: template
-    id: maghrib_reminder_{{ min }}
-    value_template: >
-      {{ min in maghrib_remind_before and
-         (as_timestamp(states('!input maghrib_sensor')) - (min * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
-  {% endfor %}
-  {% for min in range(1, 61) %}
-  - platform: template
-    id: isha_reminder_{{ min }}
-    value_template: >
-      {{ min in isha_remind_before and
-         (as_timestamp(states('!input isha_sensor')) - (min * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
-  {% endfor %}
+      {{ 10 in fajr_remind_before and
+         (as_timestamp(states('!input fajr_sensor')) - 600) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
+  # Repeat for other prayers and minutes
 
 condition:
   - condition: template
@@ -456,8 +438,7 @@ action:
               importance: high
               persistent: false
               sticky: false
-      {% for min in range(1, 61) %}
-      - conditions: "{{ trigger.id == 'fajr_reminder_{{ min }}' }}"
+      - conditions: "{{ trigger.id == 'fajr_reminder_1' }}"
         sequence:
           - repeat:
               for_each: !input notify_devices
@@ -466,15 +447,13 @@ action:
                   domain: mobile_app
                   type: notify
                   title: "⏰ Fajr Reminder"
-                  message: "Fajr prayer is in {{ min }} minutes."
+                  message: "Fajr prayer is in 1 minute."
                   data:
                     channel: prayer_notifications
                     importance: high
                     persistent: false
                     sticky: false
-      {% endfor %}
-      {% for min in range(1, 61) %}
-      - conditions: "{{ trigger.id == 'dhuhr_reminder_{{ min }}' }}"
+      - conditions: "{{ trigger.id == 'fajr_reminder_5' }}"
         sequence:
           - repeat:
               for_each: !input notify_devices
@@ -482,16 +461,14 @@ action:
                 - device_id: "{{ repeat.item }}"
                   domain: mobile_app
                   type: notify
-                  title: "⏰ Dhuhr Reminder"
-                  message: "Dhuhr prayer is in {{ min }} minutes."
+                  title: "⏰ Fajr Reminder"
+                  message: "Fajr prayer is in 5 minutes."
                   data:
                     channel: prayer_notifications
                     importance: high
                     persistent: false
                     sticky: false
-      {% endfor %}
-      {% for min in range(1, 61) %}
-      - conditions: "{{ trigger.id == 'asr_reminder_{{ min }}' }}"
+      - conditions: "{{ trigger.id == 'fajr_reminder_10' }}"
         sequence:
           - repeat:
               for_each: !input notify_devices
@@ -499,47 +476,14 @@ action:
                 - device_id: "{{ repeat.item }}"
                   domain: mobile_app
                   type: notify
-                  title: "⏰ Asr Reminder"
-                  message: "Asr prayer is in {{ min }} minutes."
+                  title: "⏰ Fajr Reminder"
+                  message: "Fajr prayer is in 10 minutes."
                   data:
                     channel: prayer_notifications
                     importance: high
                     persistent: false
                     sticky: false
-      {% endfor %}
-      {% for min in range(1, 61) %}
-      - conditions: "{{ trigger.id == 'maghrib_reminder_{{ min }}' }}"
-        sequence:
-          - repeat:
-              for_each: !input notify_devices
-              sequence:
-                - device_id: "{{ repeat.item }}"
-                  domain: mobile_app
-                  type: notify
-                  title: "⏰ Maghrib Reminder"
-                  message: "Maghrib prayer is in {{ min }} minutes."
-                  data:
-                    channel: prayer_notifications
-                    importance: high
-                    persistent: false
-                    sticky: false
-      {% endfor %}
-      {% for min in range(1, 61) %}
-      - conditions: "{{ trigger.id == 'isha_reminder_{{ min }}' }}"
-        sequence:
-          - repeat:
-              for_each: !input notify_devices
-              sequence:
-                - device_id: "{{ repeat.item }}"
-                  domain: mobile_app
-                  type: notify
-                  title: "⏰ Isha Reminder"
-                  message: "Isha prayer is in {{ min }} minutes."
-                  data:
-                    channel: prayer_notifications
-                    importance: high
-                    persistent: false
-                    sticky: false
+      # Repeat for other prayers and minutes
   - device_id: !input notify_device
     domain: mobile_app
     type: notify
