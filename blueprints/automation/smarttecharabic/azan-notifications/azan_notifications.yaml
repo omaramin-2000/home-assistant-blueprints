@@ -229,100 +229,103 @@ blueprint:
           selector:
             text: {}
 
-              # ————————————————————————————————————————
-              # Remind before prayer (NEW SECTION)
-              # ————————————————————————————————————————
-              remind_before_section:
-                name: Remind Before Prayer
-                description: Set how many minutes before each prayer you want a reminder and which devices to notify.
-                icon: mdi:alarm
-                collapsed: true
-                input:
-                fajr_remind_before:
-                  name: Minutes before Fajr
-                  description: Send a reminder this many minutes before Fajr.
-                  default: 0
-                  selector:
-                  number:
-                    min: 0
-                    max: 60
-                    step: 1
-                fajr_remind_devices:
-                  name: Devices for Fajr Reminder
-                  description: Select devices to notify for Fajr reminder.
-                  selector:
-                  device:
-                    filter:
-                    - integration: mobile_app
-                    multiple: true
-                dhuhr_remind_before:
-                  name: Minutes before Dhuhr
-                  description: Send a reminder this many minutes before Dhuhr.
-                  default: 0
-                  selector:
-                  number:
-                    min: 0
-                    max: 60
-                    step: 1
-                dhuhr_remind_devices:
-                  name: Devices for Dhuhr Reminder
-                  description: Select devices to notify for Dhuhr reminder.
-                  selector:
-                  device:
-                    filter:
-                    - integration: mobile_app
-                    multiple: true
-                asr_remind_before:
-                  name: Minutes before Asr
-                  description: Send a reminder this many minutes before Asr.
-                  default: 0
-                  selector:
-                  number:
-                    min: 0
-                    max: 60
-                    step: 1
-                asr_remind_devices:
-                  name: Devices for Asr Reminder
-                  description: Select devices to notify for Asr reminder.
-                  selector:
-                  device:
-                    filter:
-                    - integration: mobile_app
-                    multiple: true
-                maghrib_remind_before:
-                  name: Minutes before Maghrib
-                  description: Send a reminder this many minutes before Maghrib.
-                  default: 0
-                  selector:
-                  number:
-                    min: 0
-                    max: 60
-                    step: 1
-                maghrib_remind_devices:
-                  name: Devices for Maghrib Reminder
-                  description: Select devices to notify for Maghrib reminder.
-                  selector:
-                  device:
-                    filter:
-                    - integration: mobile_app
-                    multiple: true
-                isha_remind_before:
-                  name: Minutes before Isha
-                  description: Send a reminder this many minutes before Isha.
-                  default: 0
-                  selector:
-                  number:
-                    min: 0
-                    max: 60
-                    step: 1
-                isha_remind_devices:
-                  name: Devices for Isha Reminder
-                  description: Select devices to notify for Isha reminder.
-                  selector:
-                  device:
-                    filter:
-                    - integration: mobile_app
-                    multiple: true
+    # ————————————————————————————————————————
+    # Remind before prayer
+    # ————————————————————————————————————————
+    fajr_remind_before:
+      name: Minutes before Fajr
+      description: Send a reminder this many minutes before Fajr.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 1
+
+    fajr_remind_devices:
+      name: Devices for Fajr Reminder
+      description: Select devices to notify for Fajr reminder.
+      selector:
+        device:
+          filter:
+            - integration: mobile_app
+          multiple: true
+
+    dhuhr_remind_before:
+      name: Minutes before Dhuhr
+      description: Send a reminder this many minutes before Dhuhr.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 1
+
+    dhuhr_remind_devices:
+      name: Devices for Dhuhr Reminder
+      description: Select devices to notify for Dhuhr reminder.
+      selector:
+        device:
+          filter:
+            - integration: mobile_app
+          multiple: true
+
+    asr_remind_before:
+      name: Minutes before Asr
+      description: Send a reminder this many minutes before Asr.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 1
+
+    asr_remind_devices:
+      name: Devices for Asr Reminder
+      description: Select devices to notify for Asr reminder.
+      selector:
+        device:
+          filter:
+            - integration: mobile_app
+          multiple: true
+
+    maghrib_remind_before:
+      name: Minutes before Maghrib
+      description: Send a reminder this many minutes before Maghrib.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 1
+
+    maghrib_remind_devices:
+      name: Devices for Maghrib Reminder
+      description: Select devices to notify for Maghrib reminder.
+      selector:
+        device:
+          filter:
+            - integration: mobile_app
+          multiple: true
+
+    isha_remind_before:
+      name: Minutes before Isha
+      description: Send a reminder this many minutes before Isha.
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 60
+          step: 1
+
+    isha_remind_devices:
+      name: Devices for Isha Reminder
+      description: Select devices to notify for Isha reminder.
+      selector:
+        device:
+          filter:
+            - integration: mobile_app
+          multiple: true
 
 variables:
   volume: !input volume_level
