@@ -394,26 +394,29 @@ action:
                     persistent: false
                     sticky: false
       # Repeat for other prayers and minutes
-  - device_id: !input notify_device
-    domain: mobile_app
-    type: notify
-    title: '{{ prayers[trigger.id].title }}'
-    message: '{{ prayers[trigger.id].message }}'
-    data:
-      notification_icon: '{{ prayers[trigger.id].icon }}'
-      color: '{{ prayers[trigger.id].color }}'
-      channel: prayer_notifications
-      importance: high
-      persistent: true
-      sticky: true
-      timeout: 0
-      actions:
-        - action: MARK_PRAYED
-          title: Mark as Prayed
-          icon: sfsymbols:checkmark.circle
-        - action: SNOOZE_PRAYER
-          title: Remind me in 5 min
-          icon: sfsymbols:clock
+  - repeat:
+      for_each: !input notify_devices
+      sequence:
+        - device_id: "{{ repeat.item }}"
+          domain: mobile_app
+          type: notify
+          title: '{{ prayers[trigger.id].title }}'
+          message: '{{ prayers[trigger.id].message }}'
+          data:
+            notification_icon: '{{ prayers[trigger.id].icon }}'
+            color: '{{ prayers[trigger.id].color }}'
+            channel: prayer_notifications
+            importance: high
+            persistent: true
+            sticky: true
+            timeout: 0
+            actions:
+              - action: MARK_PRAYED
+                title: Mark as Prayed
+                icon: sfsymbols:checkmark.circle
+              - action: SNOOZE_PRAYER
+                title: Remind me in 5 min
+                icon: sfsymbols:clock
 
   - variables:
       media_type: !input media_player_type
