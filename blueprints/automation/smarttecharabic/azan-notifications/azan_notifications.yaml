@@ -23,23 +23,23 @@ blueprint:
   source_url: https://github.com/shadynafie/home-assistant-blueprints/blob/main/blueprints/automation/smarttecharabic/azan-notifications/azan_notifications.yaml
 
   input:
-  
-    # ————————————————————————————————————————
-    # Notification target
-    # ————————————————————————————————————————
-    notify_target:
-      name:  Notification Target Device
-      description: Choose the phone or tablet that will receive the prayer notifications.
-      icon: mdi:devices
-      collapsed: false
-      input:
-        notify_device:
-          name: 📲 Mobile Device
-          selector:
-            device:
-              filter:
-              - integration: mobile_app
-              multiple: false
+
+  # ————————————————————————————————————————
+  # Notification target (UPDATED)
+  # ————————————————————————————————————————
+  notify_target:
+    name:  Notification Target Devices
+    description: Choose one or more devices to receive notifications.
+    icon: mdi:devices
+    collapsed: false
+    input:
+      notify_devices:
+        name: 📲 Mobile Devices
+        selector:
+          device:
+            filter:
+            - integration: mobile_app
+            multiple: true   # <--- allow multiple devices
 
     # ————————————————————————————————————————
     # Prayer‑time sensors
@@ -234,55 +234,40 @@ blueprint:
     # ————————————————————————————————————————
     remind_before_section:
       name: Remind Before Prayer
-      description: Set how many minutes before each prayer you want a reminder.
+      description: Enter a list of minutes before each prayer for reminders (comma separated, e.g. 10,5,2).
       icon: mdi:alarm
       collapsed: true
       input:
         fajr_remind_before:
           name: Minutes before Fajr
-          description: Send a reminder this many minutes before Fajr.
-          default: 0
+          description: Enter minutes before Fajr (comma separated).
+          default: "0"
           selector:
-            number:
-              min: 0
-              max: 60
-              step: 1
+            text: {}
         dhuhr_remind_before:
           name: Minutes before Dhuhr
-          description: Send a reminder this many minutes before Dhuhr.
-          default: 0
+          description: Enter minutes before Dhuhr (comma separated).
+          default: "0"
           selector:
-            number:
-              min: 0
-              max: 60
-              step: 1
+            text: {}
         asr_remind_before:
           name: Minutes before Asr
-          description: Send a reminder this many minutes before Asr.
-          default: 0
+          description: Enter minutes before Asr (comma separated).
+          default: "0"
           selector:
-            number:
-              min: 0
-              max: 60
-              step: 1
+            text: {}
         maghrib_remind_before:
           name: Minutes before Maghrib
-          description: Send a reminder this many minutes before Maghrib.
-          default: 0
+          description: Enter minutes before Maghrib (comma separated).
+          default: "0"
           selector:
-            number:
-              min: 0
-              max: 60
-              step: 1
+            text: {}
         isha_remind_before:
           name: Minutes before Isha
-          description: Send a reminder this many minutes before Isha.
-          default: 0
+          description: Enter minutes before Isha (comma separated).
+          default: "0"
           selector:
-            number:
-              min: 0
-              max: 60
-              step: 1
+            text: {}
 
 variables:
   volume: !input volume_level
@@ -322,11 +307,16 @@ variables:
       title: "🌙 Isha Prayer Time"
       icon: mdi:weather-night
       color: '#5C6BC0'
-  fajr_remind_before: !input fajr_remind_before
-  dhuhr_remind_before: !input dhuhr_remind_before
-  asr_remind_before: !input asr_remind_before
-  maghrib_remind_before: !input maghrib_remind_before
-  isha_remind_before: !input isha_remind_before
+  fajr_remind_before: >
+    {{ [int(x) for x in !input fajr_remind_before.split(',') if x|int >= 0] }}
+  dhuhr_remind_before: >
+    {{ [int(x) for x in !input dhuhr_remind_before.split(',') if x|int >= 0] }}
+  asr_remind_before: >
+    {{ [int(x) for x in !input asr_remind_before.split(',') if x|int >= 0] }}
+  maghrib_remind_before: >
+    {{ [int(x) for x in !input maghrib_remind_before.split(',') if x|int >= 0] }}
+  isha_remind_before: >
+    {{ [int(x) for x in !input isha_remind_before.split(',') if x|int >= 0] }}
 
 trigger:
   - platform: time
@@ -364,6 +354,41 @@ trigger:
     id: isha_reminder
     value_template: >
       {{ (as_timestamp(states('!input isha_sensor')) - (isha_remind_before * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
+  {% for min in range(1, 61) %}
+  - platform: template
+    id: fajr_reminder_{{ min }}
+    value_template: >
+      {{ min in fajr_remind_before and
+         (as_timestamp(states('!input fajr_sensor')) - (min * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
+  {% endfor %}
+  {% for min in range(1, 61) %}
+  - platform: template
+    id: dhuhr_reminder_{{ min }}
+    value_template: >
+      {{ min in dhuhr_remind_before and
+         (as_timestamp(states('!input dhuhr_sensor')) - (min * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
+  {% endfor %}
+  {% for min in range(1, 61) %}
+  - platform: template
+    id: asr_reminder_{{ min }}
+    value_template: >
+      {{ min in asr_remind_before and
+         (as_timestamp(states('!input asr_sensor')) - (min * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
+  {% endfor %}
+  {% for min in range(1, 61) %}
+  - platform: template
+    id: maghrib_reminder_{{ min }}
+    value_template: >
+      {{ min in maghrib_remind_before and
+         (as_timestamp(states('!input maghrib_sensor')) - (min * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
+  {% endfor %}
+  {% for min in range(1, 61) %}
+  - platform: template
+    id: isha_reminder_{{ min }}
+    value_template: >
+      {{ min in isha_remind_before and
+         (as_timestamp(states('!input isha_sensor')) - (min * 60)) | timestamp_custom('%H:%M:%S', False) == now().strftime('%H:%M:%S') }}
+  {% endfor %}
 
 condition:
   - condition: template
@@ -431,6 +456,90 @@ action:
               importance: high
               persistent: false
               sticky: false
+      {% for min in range(1, 61) %}
+      - conditions: "{{ trigger.id == 'fajr_reminder_{{ min }}' }}"
+        sequence:
+          - repeat:
+              for_each: !input notify_devices
+              sequence:
+                - device_id: "{{ repeat.item }}"
+                  domain: mobile_app
+                  type: notify
+                  title: "⏰ Fajr Reminder"
+                  message: "Fajr prayer is in {{ min }} minutes."
+                  data:
+                    channel: prayer_notifications
+                    importance: high
+                    persistent: false
+                    sticky: false
+      {% endfor %}
+      {% for min in range(1, 61) %}
+      - conditions: "{{ trigger.id == 'dhuhr_reminder_{{ min }}' }}"
+        sequence:
+          - repeat:
+              for_each: !input notify_devices
+              sequence:
+                - device_id: "{{ repeat.item }}"
+                  domain: mobile_app
+                  type: notify
+                  title: "⏰ Dhuhr Reminder"
+                  message: "Dhuhr prayer is in {{ min }} minutes."
+                  data:
+                    channel: prayer_notifications
+                    importance: high
+                    persistent: false
+                    sticky: false
+      {% endfor %}
+      {% for min in range(1, 61) %}
+      - conditions: "{{ trigger.id == 'asr_reminder_{{ min }}' }}"
+        sequence:
+          - repeat:
+              for_each: !input notify_devices
+              sequence:
+                - device_id: "{{ repeat.item }}"
+                  domain: mobile_app
+                  type: notify
+                  title: "⏰ Asr Reminder"
+                  message: "Asr prayer is in {{ min }} minutes."
+                  data:
+                    channel: prayer_notifications
+                    importance: high
+                    persistent: false
+                    sticky: false
+      {% endfor %}
+      {% for min in range(1, 61) %}
+      - conditions: "{{ trigger.id == 'maghrib_reminder_{{ min }}' }}"
+        sequence:
+          - repeat:
+              for_each: !input notify_devices
+              sequence:
+                - device_id: "{{ repeat.item }}"
+                  domain: mobile_app
+                  type: notify
+                  title: "⏰ Maghrib Reminder"
+                  message: "Maghrib prayer is in {{ min }} minutes."
+                  data:
+                    channel: prayer_notifications
+                    importance: high
+                    persistent: false
+                    sticky: false
+      {% endfor %}
+      {% for min in range(1, 61) %}
+      - conditions: "{{ trigger.id == 'isha_reminder_{{ min }}' }}"
+        sequence:
+          - repeat:
+              for_each: !input notify_devices
+              sequence:
+                - device_id: "{{ repeat.item }}"
+                  domain: mobile_app
+                  type: notify
+                  title: "⏰ Isha Reminder"
+                  message: "Isha prayer is in {{ min }} minutes."
+                  data:
+                    channel: prayer_notifications
+                    importance: high
+                    persistent: false
+                    sticky: false
   - device_id: !input notify_device
     domain: mobile_app
     type: notify
